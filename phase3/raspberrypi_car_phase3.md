@@ -79,6 +79,16 @@ code
 
 ```
 sudo apt install terminator
+terminator
 ```
 
-# Part4: 
+- Gnome screenshot: It is good if your keyboard doesn't have a printscreen button.
+
+```
+sudo apt install gnome-screenshot
+```
+
+Then find *Screenshot* in your app list.
+
+# Part4: Motor driving
+
