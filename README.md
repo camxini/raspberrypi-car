@@ -3,7 +3,7 @@
 
 浙江大学 SRTP
 
-Finished on 23 May, 2025
+29 Mar, 2024 - 23 May, 2025
 
 This is a car with Raspberry Pi 4B, HC-SR04 ultrasonic sensor, RPLIDAR A1, two coding motors and L298N motor drive model.
 
