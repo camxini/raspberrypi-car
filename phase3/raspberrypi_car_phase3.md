@@ -220,3 +220,25 @@ ros2 run car_serial_control cmdvel_ro_serial
 *Note: The two 'ros2 run' command should be run at the same time.*
 
 Now if pressing the keyboard, the command is sent in the **string** format like "V0.50,0.50", and you will receive info like "Sent: V0.50,0.50" in the terminal.
+
+### Emergency stop
+
+The *measure_distance* function is used for calculating the distance between the obstacle and the ultrasonic sensor:
+
+```
+pulse_start = time.time()
+pulse_end = time.time()
+while not self.echo.is_active:
+    pulse_end = time.time()
+while self.echo.is_active:
+    pulse_end = time.time()
+pulse_duration = pulse_end - pulse_start
+distance = (pulse_duration * 340) / 2
+```
+
+The *while* sentences are used for recording the end time. For example, if echo=0, the first loop begins and *pulse_end* adds until echo=1.
+
+If the car is close to the obstacle, a "V0,0" command will be sent.
+
+## Arduino
+
