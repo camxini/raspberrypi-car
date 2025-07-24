@@ -194,6 +194,8 @@ self.serial_port.write(command.encode('utf-8'))
 self.get_logger().info(f"Sent: {command.strip()}")
 ```
 
+Through serial, the command will be sent to Arduino.
+
 **Revise *setup.py*:**
 
 Find this in *setup.py*:
@@ -242,7 +244,70 @@ If the car is close to the obstacle, a "V0,0" command will be sent.
 
 ## Arduino 
 
-*Receive velocity commands, drive the motor and send the encoder info.*
+*Receive velocity commands, drive the motor and send the encoder data.*
 
 ### Receive velocity commands
 
+Arduino has received a string like "V0.50,0.50" through serial, and now process this string:
+
+```
+input = input.substring(1); // remove 'V'
+int commaIndex = input.indexOf(',');
+if (commaIndex != -1) {
+    float left = input.substring(0, commaIndex).toFloat();
+    float right = input.substring(commaIndex + 1).toFloat();
+}
+```
+
+The code above removes "V" first, and then split the rest string in two numbers.
+
+Use *digitalWrite* and *analogWrite* functions to drive motors with PWM control.
+*Change the code here if you want to use PID.*
+
+Send serial info:
+
+```
+Serial.print("Received: L");
+Serial.print(left);
+Serial.print(",R");
+Serial.println(right);
+```
+
+You can see the output in the serial monitor.
+
+### Send encoder data
+
+The function *attachInterrupt()* runs when the monitored variable changes. It is fast and uses less calculation.
+
+Let's take motor1 for example.
+
+**Initialize:**
+
+```
+attachInterrupt(digitalPinToInterrupt(encoder1A), encoder1ISR, RISING);
+```
+
+**Count when attachInterrupt is triggered:**
+
+```
+void encoder1ISR() {
+  if (digitalRead(encoder1B) == HIGH)
+    encoder1++;
+  else
+    encoder1--;
+}
+```
+
+**Send serial info:**
+
+```
+noInterrupts();
+long left = encoder1;
+long right = encoder2;
+interrupts();
+Serial.print(left);
+Serial.print(",");
+Serial.println(right);
+```
+
+Now the encoder data of both motors are output in a form like "500,1000".
