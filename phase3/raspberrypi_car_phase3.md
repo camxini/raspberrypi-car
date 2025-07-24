@@ -46,7 +46,7 @@ Follow this: [https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.htm
 
 Choose the full version of ros when installing, i.e. *sudo apt install ros-jazzy-desktop*.
 
-Install rosdep:
+**Install rosdep:**
 
 ```
 sudo apt update
@@ -55,7 +55,27 @@ sudo rosdep init
 rosdep update
 ```
 
-Apps recommended:
+**Create ROS2 workspace:**
+
+- Create the workspace:
+
+```
+mkdir -p ~/ros2_ws/src
+```
+
+- Activate and compile:
+
+```
+cd ~/ros2_ws
+colcon build
+source install/setup.bash
+```
+
+Always activate and compile your ROS workspace under *ros2_ws* directory, not under *src*.
+
+Remember to do this **every time you changed your code in the ROS workspace**.
+
+**Apps recommended:**
 
 - Vscode:
 
@@ -92,3 +112,111 @@ Then find *Screenshot* in your app list.
 
 # Part4: Motor driving
 
+## teleop_twist_keyboard
+
+This is a program which enables you to send linear and angular velocity commands. Now install and run:
+
+```
+cd ros2_ws
+sudo apt install ros-jazzy-teleop-twist-keyboard
+colcon build
+source install/setup.bash
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
+```
+
+Press *i, j, k, l and ,* to send velocity commands, and *u, o, m and .* to increase or decrease the velocity.
+
+**You should know the commands are sent through the node /cmd_vel.** 
+
+## car_serial_control/cmdvel_to_serial:
+
+*Receive info from node teleop_twist_keyboard, send velocity commands to arduino and stop when in emergency.*
+
+**Create a python package:**
+
+```
+ros2 pkg create car_serial_control --build-type ament_python --dependencies rclpy
+```
+
+This will generate:
+
+```
+car_serial_control/
+├── car_serial_control/
+│   └── __init__.py
+├── resource/
+│   └── car_serial_control
+├── setup.py
+├── package.xml
+└── setup.cfg
+```
+
+**Create a python file, which is the main code:**
+
+```
+cd ros2_ws/src/car_serial_control/car_serial_control
+```
+
+Details of the code are in the folder. You can edit your code with Vscode, gedit, vim, nano, etc.
+
+### Read from the keyboard and send command
+
+**Store the message of node /cmd_vel in msg:**
+
+```
+from geometry_msgs.msg import Twist
+self.subscription = self.create_subscription(Twist, '/cmd_vel', self.cmd_callback, 10)
+```
+
+Since teleop_twist_keyboard sends info in node /cmd_vel, info of the keyboard can be received now.
+
+Set two variables storing the properties of msg:
+
+```
+v = -msg.linear.x
+w = msg.angular.z
+```
+
+*Note: The positive or negative of the variables depends on the installation direction of the wheel. It doesn't matter.*
+
+**Calculate the speeds of both wheels:**
+
+```
+left = max(min(left, MAX_SPEED), -MAX_SPEED)
+right = max(min(right, MAX_SPEED), -MAX_SPEED)
+```
+
+**Send velocity command:**
+
+```
+command = f"V{left:.2f},{right:.2f}\n"
+self.serial_port.write(command.encode('utf-8'))
+self.get_logger().info(f"Sent: {command.strip()}")
+```
+
+**Revise *setup.py*:**
+
+Find this in *setup.py*:
+
+```
+entry_points={
+        'console_scripts': [
+        ],
+    },
+```
+
+Insert this in the brackets[]:
+
+```
+'cmdvel_to_serial = car_serial_control.cmdvel_to_serial:main',
+```
+
+After coding, compiling and *source* command, run:
+
+```
+ros2 run car_serial_control cmdvel_ro_serial
+```
+
+*Note: The two 'ros2 run' command should be run at the same time.*
+
+Now if pressing the keyboard, the command is sent in the **string** format like "V0.50,0.50", and you will receive info like "Sent: V0.50,0.50" in the terminal.
