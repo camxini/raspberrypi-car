@@ -240,5 +240,9 @@ The *while* sentences are used for recording the end time. For example, if echo=
 
 If the car is close to the obstacle, a "V0,0" command will be sent.
 
-## Arduino
+## Arduino 
+
+*Receive velocity commands, drive the motor and send the encoder info.*
+
+### Receive velocity commands
 
