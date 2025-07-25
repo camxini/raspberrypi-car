@@ -501,3 +501,28 @@ In Windows, download MobaXterm Xserver at: [https://mobaxterm.mobatek.net/downlo
 Run MobaXterm Xserver, choose *Session* in the upper left corner, then choose *SSH*.
 
 Enter the IP address of raspberry pi, then the terminal will appear. Enter *rviz2* ro check if the graphic interface can be displayed in Windows.
+
+## rviz
+
+With all nodes running, run:
+
+```
+ros2 run rviz2 rviz2 --ros-args --param use_sim_time:=true
+```
+
+Rviz will be opened with a map in the middle and a navigation bar in the left. Click *Add* in the lower left corner, then choose:
+
+- TF
+- Odometry: Set the topic as *odom* after adding.
+- Laserscan: Set the topic as *scan*.
+- Map: Set the topic as *map*.
+
+A column *Fixed Frame* is at the top of the navigation bar. Enter *map* here, and you will see a map on the screen.
+
+Elements on the map:
+
+- Black edges: obstacles lidar detected.
+- Grey background: passable area.
+- Some red or pink lines: lidar scan result.
+- One or two xyz pointers: TF.
+- A huge red pointer: odom.
