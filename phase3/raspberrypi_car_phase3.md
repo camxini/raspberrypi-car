@@ -468,3 +468,26 @@ Make sure your tf tree (map->odom->base_link->laser) is complete.
 
 # Part6: SLAM mapping
 
+## ssh
+
+Enable your ssh service:
+
+```
+sudo apt install openssh-server
+sudo systemctl enable ssh
+sudo systemctl start ssh
+```
+
+Get your IP address:
+
+```
+hostname -I
+```
+
+Your PC should connect the same WLAN or Ethernet with the raspberry pi. Try ssh connection in your windows cmd terminal:
+
+```
+ssh <hostname>@<ip address>
+```
+
+where <hostname> is your ubuntu hostname, <ip address> is the ip address you have just got.
