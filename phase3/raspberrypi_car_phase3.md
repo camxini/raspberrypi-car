@@ -194,7 +194,7 @@ self.serial_port.write(command.encode('utf-8'))
 self.get_logger().info(f"Sent: {command.strip()}")
 ```
 
-Through serial, the command will be sent to Arduino.
+Through **serial**, the command will be sent to Arduino.
 
 **Revise *setup.py*:**
 
@@ -310,4 +310,49 @@ Serial.print(",");
 Serial.println(right);
 ```
 
-Now the encoder data of both motors are output in a form like "500,1000".
+Now the encoder data of both motors are output in a form like "500,1000". Raspberry pi receives this info through **serial**.
+
+## encoder_reader/encoder_odom
+
+*Receive and display data from Arduino, output odometry (location, rotation and velocity) and send tf messages between base_link and odom.*
+
+### Receive Arduino data
+
+There are two types of output of Arduino:
+
+- Received: Lx.xx,Rx.xx
+- Lxxx,Rxxx
+
+Filter the first one, since we need encoder data only:
+
+```
+if ':' in msg.data or msg.data.startswith("Received"):
+    return
+if ',' not in msg.data:
+    return
+```
+
+*Note: Some messages will be sent like 'Received: Lx.xx' or 'Lxxx', which are not completed.*
+
+### Calculate odometry
+
+Messages odom needs: location ($x,y,z$), angle quaternion ($q$), linear and angular velocity of the whole car ($v_x, v_\theta$).
+
+Calculation:
+
+$$\Delta l = \pi D (n_l - n_{l0}) / P$$
+$$\Delta r = \pi D (n_r - n_{r0}) / P$$
+$$\Delta c = (\Delta l + \Delta r) / 2$$
+$$\Delta \theta = (\Delta r - \Delta l) / B$$
+$$x = \Delta c + cos(\theta + \Delta \theta / 2)$$
+$$y = \Delta c + sin(\theta + \Delta \theta / 2)$$
+$$z = 0$$
+$$\theta += \Delta \theta$$
+$$q_x = 0$$
+$$q_y = 0$$
+$$q_z = sin(\theta / 2)$$
+$$q_w = cos(\theta / 2)$$
+$$v_x = \Delta c / \Delta t$$
+$$v_\theta = \Delta \theta / \Delta t$$
+
+
