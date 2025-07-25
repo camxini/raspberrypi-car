@@ -244,7 +244,7 @@ If the car is close to the obstacle, a "V0,0" command will be sent.
 
 ## Arduino 
 
-*Receive velocity commands, drive the motor and send the encoder data.*
+*Receive velocity commands, drive the motor and send the encoder pulse data.*
 
 ### Receive velocity commands
 
@@ -310,11 +310,11 @@ Serial.print(",");
 Serial.println(right);
 ```
 
-Now the encoder data of both motors are output in a form like "500,1000". Raspberry pi receives this info through **serial**.
+Now the encoder pulse data of both motors are output in a form like "500,1000". Raspberry pi receives this info through **serial**.
 
 ## encoder_reader/encoder_odom
 
-*Receive and display data from Arduino, output odometry (location, rotation and velocity) and send tf messages between base_link and odom.*
+*Receive and display data from Arduino, calculate odometry (displacement, rotation and velocity) and send tf messages between base_link and odom.*
 
 ### Receive Arduino data
 
@@ -336,7 +336,7 @@ if ',' not in msg.data:
 
 ### Calculate odometry
 
-Messages odom needs: location ($x,y,z$), angle quaternion ($q$), linear and angular velocity of the whole car ($v_x, v_\theta$).
+Messages odom needs: displacement ($x,y,z$), angle quaternion ($q$), linear and angular velocity of the whole car ($v_x, v_\theta$).
 
 Calculation:
 
@@ -355,4 +355,28 @@ $$q_w = cos(\theta / 2)$$
 $$v_x = \Delta c / \Delta t$$
 $$v_\theta = \Delta \theta / \Delta t$$
 
+Symbol explanation:
+
+| Symbol | Explanation |
+| --- | --- |
+| $D$ | wheel diameter |
+| $P$ | number of encoder pulses per revolution |
+| $B$ | wheel distance |
+| $n_l, n_r$ | number of encoder pulses of left (right) wheel |
+| $n_{l0}, n_{r0}$ | number of pulses of left (right) wheel of last moment |
+| $d_l, d_r$ | moving distance of left (right) wheel |
+| $d_c$ | moving distance of car center |
+| $d_\theta$ | angular variation of car center |
+| $(x,y,z)$ | displacement of the car |
+| $\theta$ | angular increment of the car |
+| $d_t$ | time difference |
+| $(q_x,q_y,q_z,q_w)$ | quaternion (rotation) |
+| $v_x$ | linear velocity |
+| $v_\theta$ | angular velocity |
+
+### Send tf messages
+
+The tf relationship of base_link and odom is clear after odometry calculation. Odom is a fixed frame, and base_link moves with the car.
+
+Send displacement and quaternion info. This creates a TF branch odom->base_link, which is useful in TF tree in the following steps.
 
