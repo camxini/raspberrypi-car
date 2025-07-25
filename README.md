@@ -1,4 +1,7 @@
 # raspberrypi-car
+
+*Note: Please skip to phase 3 if you want to know how to build a car.*
+
 **Phase1:** ZJU SRTP Program - A car using Raspberry Pi for route planning
 
 浙江大学 SRTP
