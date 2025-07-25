@@ -382,5 +382,89 @@ The tf relationship of base_link and odom is clear after odometry calculation. O
 
 Send displacement and quaternion info. This creates a TF branch odom->base_link, which is useful in TF tree in the following chapters.
 
+After coding, compiling and *source* command, run:
+
+```
+ros2 run encoder_reader encoder_odom
+```
+
+You will see the encoder pulse data in the terminal.
+
 ## Laser
+
+```
+cd ros2_ws/src
+git clone https://github.com/Slamtec/rplidar_ros.git
+cd ..
+rosdep install --from-paths src --ignore-src -r -y
+colcon build
+source install/setup.bash
+```
+Every time after compiling and *source* command, you can run:
+
+```
+ros2 launch rplidar_ros rplidar_a1_launch.py
+```
+
+to start broadcasting info of node /scan.
+
+## Completion of other TF messages
+
+*The whole TF is map->odom->base_link->laser. We have merely a branch odom->base_link.*
+
+### base_link to laser
+
+Force a static TF transformation:
+
+```
+ros2 run tf2_ros static_transform_publisher 0.1 0 0 0 0 0 1 base_link laser
+```
+
+The seven numbers above are given in the form $x,y,z,q_x,q_y,q_z,q_w$. Edit the numbers if the laser is in another place.
+
+### map to odom
+
+Use slam_toolbox to link /map with /odom. Gmapping is not recommended in ros2 jazzy.
+
+```
+ros2 launch slam_toolbox online_async_launch.py scan_topic:=/scan odom_topic:=\odom use_sim_time:=false
+```
+
+Ensure topics /scan and /odom have been launched. You can check your current topic with this command:
+
+```
+ros2 topic list
+```
+
+Now the tf tree has been set. You can examine your tf relation by:
+
+```
+ros2 run tf2_tools view_frames
+```
+
+It will generate a pdf file of your tf tree. Make sure all your 'ros2 run' and 'ros2 launch' commands are running.
+
+### Summary
+
+Here are all the commands running currently:
+
+```
+ros2 run car_serial_control cmdvel_to_serial
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
+ros2 run encoder_reader encoder_odom
+ros2 launch rplidar_ros rplidar_a1_launch.py
+ros2 run tf2_ros static_transform_publisher 0.1 0 0 0 0 0 1 base_link laser
+ros2 launch slam_toolbox online_async_launch.py scan_topic:=/scan odom_topic:=\odom use_sim_time:=false
+```
+
+Search in the topic list and be sure you can see the following topics:
+
+- /scan
+- /odom
+- /base_link
+- /map
+
+Make sure your tf tree (map->odom->base_link->laser) is complete.
+
+# Part6: SLAM mapping
 
