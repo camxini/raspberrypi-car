@@ -312,6 +312,8 @@ Serial.println(right);
 
 Now the encoder pulse data of both motors are output in a form like "500,1000". Raspberry pi receives this info through **serial**.
 
+# Part 5: TF tree building
+
 ## encoder_reader/encoder_odom
 
 *Receive and display data from Arduino, calculate odometry (displacement, rotation and velocity) and send tf messages between base_link and odom.*
@@ -378,5 +380,7 @@ Symbol explanation:
 
 The tf relationship of base_link and odom is clear after odometry calculation. Odom is a fixed frame, and base_link moves with the car.
 
-Send displacement and quaternion info. This creates a TF branch odom->base_link, which is useful in TF tree in the following steps.
+Send displacement and quaternion info. This creates a TF branch odom->base_link, which is useful in TF tree in the following chapters.
+
+## Laser
 
