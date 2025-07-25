@@ -491,3 +491,13 @@ ssh <hostname>@<ip address>
 ```
 
 where <hostname> is your ubuntu hostname, <ip address> is the ip address you have just got.
+
+## Graphic interface forwarding
+
+SSH allows non-graphic commands. If commands including graphics like *rviz* is needed, we should configure x server.
+
+In Windows, download MobaXterm Xserver at: [https://mobaxterm.mobatek.net/download-home-edition.html](https://mobaxterm.mobatek.net/download-home-edition.html)
+
+Run MobaXterm Xserver, choose *Session* in the upper left corner, then choose *SSH*.
+
+Enter the IP address of raspberry pi, then the terminal will appear. Enter *rviz2* ro check if the graphic interface can be displayed in Windows.
