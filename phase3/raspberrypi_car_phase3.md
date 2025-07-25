@@ -173,7 +173,7 @@ Since teleop_twist_keyboard sends info in node /cmd_vel, info of the keyboard ca
 Set two variables storing the properties of msg:
 
 ```
-v = -msg.linear.x
+v = msg.linear.x
 w = msg.angular.z
 ```
 
