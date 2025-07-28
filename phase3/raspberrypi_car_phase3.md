@@ -315,7 +315,7 @@ Symbol explanation:
 | Symbol | Explanation |
 | --- | --- |
 | $e_l, e_r$ | encoder pulse number of current time |
-| $e_{l0}, e_{r0} | encoder pulse number of last time |
+| $e_{l0}, e_{r0}$ | encoder pulse number of last time |
 | $k_p$ | p control coefficient |
 | $s_l, s_r$ | target speed before correction |
 | ${sp}_l, {sp}_r$ | target speed after correction |
