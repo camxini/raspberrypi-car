@@ -298,6 +298,30 @@ void encoder1ISR() {
 }
 ```
 
+**Adjust motor speed:**
+
+The car may not go straight if given a straightforward command due to friction. 
+
+Use a simple *p control*. When the encoder pulse increase is different if a straightforward command is sent, then:
+
+$$\Delta L = e_l - e_{l0}$$
+$$\Delta R = e_r - e_{r0}$$
+$$diff = \Delta L - \Delta R$$
+$${sp}_l = s_l - k_p \times diff$$
+$${sp}_r = s_r + k_p \times diff$$
+
+Symbol explanation:
+
+| Symbol | Explanation |
+| --- | --- |
+| $e_l, e_r$ | encoder pulse number of current time |
+| $e_{l0}, e_{r0} | encoder pulse number of last time |
+| $k_p$ | p control coefficient |
+| $s_l, s_r$ | target speed before correction |
+| ${sp}_l, {sp}_r$ | target speed after correction |
+
+*Note: This p control exists only when a straightforward command is sent.**
+
 **Send serial info:**
 
 ```
